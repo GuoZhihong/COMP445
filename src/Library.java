@@ -1,7 +1,6 @@
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
-import java.util.List;
 
 public class Library {
 
@@ -20,7 +19,11 @@ public class Library {
         String url = str.substring(str.indexOf("http://"), str.indexOf("'",str.indexOf("http://")));
         URL u = new URL(url);
         host = u.getHost();
-        port = u.getDefaultPort();
+        if(host.equals("localhost")){
+            port = 8080;
+        }else {
+            port = u.getDefaultPort();
+        }
 
         if(str.contains("?")) {
             queryParameters(u);//handle query parameters
@@ -66,8 +69,11 @@ public class Library {
         String url = str.substring(str.indexOf("http://"), str.indexOf("'",str.indexOf("http://")));
         URL u = new URL(url);
         host = u.getHost();
-        port = u.getDefaultPort();
-
+        if(host.equals("localhost")){
+            port = 8080;
+        }else {
+            port = u.getDefaultPort();
+        }
         if(str.contains("?")) {
             queryParameters(u);//handle query parameters
         }
@@ -119,16 +125,17 @@ public class Library {
 
         /*default information setting(Notice : not all of http header field definitions are defined,only those that appeared in the assignment are defined)*/
         String connectionType = "close";
-        String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36";
+        String userAgent = "COMP445";
         String contentType = null;
         String contentLength = null;
+        FileOperation fileOperation = new FileOperation();
         if(allow.equals("POST")) {//these options are only valid under POST request
             contentType = "text/plain";
             if(str.contains("-d")) {
                 body = str.substring(str.indexOf("{", str.indexOf("-d")), str.indexOf("}") + 1);
             }else if(str.contains("-f")){
                 String path = str.substring(str.indexOf("-f") + 3,str.indexOf(" ",str.indexOf("-f") + 3));
-                body = readFile(path);
+                body = fileOperation.readFile(path);
             }
             contentLength = String.valueOf(body.length());
         }
@@ -186,6 +193,7 @@ public class Library {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder stringBuilder = new StringBuilder();
         String data;
+        FileOperation fileOperation = new FileOperation();
         do {
             data = bufferedReader.readLine();
             stringBuilder.append(data+"\r\n");
@@ -198,44 +206,18 @@ public class Library {
         /*verbose requirement*/
         if(str.contains("-v")) {//case that needs verbose
             if(needOutputFile(str)){//case need to output body data
-                outputFile(response,str.substring(str.indexOf("-o") + 3));
+                fileOperation.writeFile(response,str.substring(str.indexOf("-o") + 3));
             }
             return response;
         }else {//case that does not need verbose
             response = response.substring(response.indexOf("{"),response.lastIndexOf("}")+ 1);
             if(needOutputFile(str)){//case need to output body data
-                outputFile(response,str.substring(str.indexOf("-o") + 3));
+                fileOperation.writeFile(response,str.substring(str.indexOf("-o") + 3));
             }
         }
         return response;
     }
 
-
-    /*-f read body data from a file*/
-    public String readFile(String path) throws IOException{
-        File file = new File(path);
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-        StringBuilder stringBuilder = new StringBuilder();
-        String nextLine;
-        do{
-            nextLine = bufferedReader.readLine();
-            stringBuilder.append(nextLine);
-        }while (nextLine != null);
-        return stringBuilder.toString();
-    }
-
-    /*-o file output option*/
-    public void outputFile(String body,String filePath){
-        File file = new File(filePath);
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(file));
-            writer.write(body);
-            writer.close();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
     public boolean needOutputFile(String str){
         if(str.contains("-o")){
             return true;

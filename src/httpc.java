@@ -1,12 +1,28 @@
+import java.net.MalformedURLException;
 import java.util.Scanner;
 
 public class httpc {
-    public static void main(String[] args) throws Exception {
-        Library library = new Library();
-        System.out.println("Please input your options");
+    public static void main(String[] args) throws MalformedURLException {
+        System.out.println("Please input your options:(1) single-thread (2) multi-threads");
         Scanner inputStream = new Scanner(System.in);
-        String input = inputStream.nextLine();
-
+        int option = inputStream.nextInt();
+        if(option == 1){
+            inputStream = new Scanner(System.in);
+            System.out.println("Please input your curl");
+            String input = inputStream.nextLine();
+            readInput(input);
+        }else {
+            inputStream = new Scanner(System.in);
+            System.out.println("Please input your first curl");
+            String input = inputStream.nextLine();
+            System.out.println("Please input your Second curl");
+            String input2 = inputStream.nextLine();
+            readInput(input);
+            readInput(input2);
+        }
+    }
+    private static void readInput(String input) throws MalformedURLException {
+        Library library = new Library();
         if(!input.isEmpty() && input.contains("httpc")){
             if(!input.contains("help")){
                 if(input.contains("get")){
@@ -25,8 +41,7 @@ public class httpc {
             System.out.println("Invalid command");
             System.exit(0);
         }
-   }
-
+    }
 
     public static void help(String string){
         if(string.contains("get")){
