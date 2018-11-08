@@ -3,12 +3,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.SocketAddress;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class SocketThread extends Thread{
@@ -16,6 +18,7 @@ public class SocketThread extends Thread{
     private boolean debugMessage;
     private String directoryPath;
     private int port;
+    private HashMap<String,String> query = new HashMap<>();
 
     public void setPort(int port) {
         this.port = port;
@@ -100,6 +103,7 @@ public class SocketThread extends Thread{
     private String response(String header,String body) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(status(header)+"\r\n");
+
         if(status(header).contains("200")&&status(header).contains("OK")) {
             stringBuilder.append("Connection: keep-alive\r\n");
         }else {
@@ -108,16 +112,28 @@ public class SocketThread extends Thread{
         for (int i = 2; i < header.split("\r\n").length; i++) {
             stringBuilder.append(header.split("\r\n")[i]+"\r\n");
         }
-        stringBuilder.append(contentType(header));
+        String[] firstLine = header.split("\r\n")[0].split(" ");
+        String path = firstLine[1];
+        if(!path.contains("get")&&!path.contains("post")) {
+            stringBuilder.append(contentType(header));
+        }
         stringBuilder.append("\r\n\r\n");
         if(status(header).contains("200")&&status(header).contains("OK")) {
-            stringBuilder.append(locateFiles(header, body));
+            stringBuilder.append(locateFiles(header, body)+"\r\n");
+        }
+        if(path.contains("get")||path.contains("post")){//normal request as A1
+            stringBuilder.append(output(header,body));
         }
         return stringBuilder.toString();
     }
+
     private String status(String header) throws IOException {
         String[] firstLine = header.split("\r\n")[0].split(" ");
         String path = firstLine[1];
+
+        if(path.contains("get")||path.contains("post")){//normal request as A1
+            return "HTTP/1.0 200 OK";
+        }
         URL url = new URL(path);
         String fileName = url.getFile();
         File file = new File(this.directoryPath+"\\"+fileName);
@@ -130,10 +146,52 @@ public class SocketThread extends Thread{
             return "HTTP/1.0 ERROR 404";
         }
     }
+
+    /*A1 normal request*/
+    private String output(String header,String body) throws MalformedURLException {
+        StringBuilder stringBuilder = new StringBuilder();
+        String[] firstLine = header.split("\r\n")[0].split(" ");
+        String path = firstLine[1];
+        URL url = new URL(path);
+        if(path.contains("?")) {
+            queryParameters(url);
+        }
+        stringBuilder.append("{\r\n");
+        stringBuilder.append("  \"args\": {\r\n");
+        for (String key:query.keySet()) {
+            stringBuilder.append("      ").append("\""+key+"\"").append("\""+query.get(key)+"\"").append(",\r\n");
+        }
+        stringBuilder.append("  },\r\n");
+        if(header.contains("POST")){
+            stringBuilder.append("  \"data\": ").append("\""+body+"\"\r\n");
+        }
+        stringBuilder.append("  \"headers\": {\r\n");
+        for (int i = 2; i < header.split("\r\n").length; i++) {
+            stringBuilder.append("      ").append(header.split("\r\n")[i]+"\r\n");
+        }
+        stringBuilder.append("  },\r\n");
+        stringBuilder.append("  \"url\": ").append("\""+url+"\"\r\n");
+        stringBuilder.append("}\r\n");
+        query.clear();
+        return stringBuilder.toString();
+    }
+
+    private void queryParameters(URL u){
+        String queryLine = u.getQuery();
+        String [] pair = queryLine.split("&");
+        for (String s:pair) {
+            String [] rest = s.split("=");
+            query.put(rest[0],rest[1]);
+        }
+    }
+
     private synchronized String locateFiles(String header, String body) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         String[] firstLine = header.split("\r\n")[0].split(" ");
         String path = firstLine[1];
+        if(path.contains("get")||path.contains("post")){
+            return "";
+        }
         URL url = new URL(path);
         String fileName = url.getFile();
         File file = new File(directoryPath+"\\"+fileName);

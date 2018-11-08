@@ -13,7 +13,11 @@ Server Side:    httpfs -d D:/onedrive/COMP/COMP445/lab/A1
                 httpfs -v -p 8080 -d D:/onedrive/COMP/COMP445/lab/A1
 
 
-Client side :   httpc post -v -h Content-Type:application/json --d '{"Assignment": 210}' 'http://localhost/inputBody.txt'
+Client side :A1:httpc get -v 'http://localhost/get?course=networking&assignment=1'
+                httpc post -h Content-Type:application/json --d '{"Assignment": 1}' 'http://localhost/post'
+
+
+             A2:httpc post -v -h Content-Type:application/json --d '{"Assignment": 210}' 'http://localhost/inputBody.txt'
                 httpc post -v -h Content-Type:application/json --d '{"Assignment": 210}' 'http://localhost/xx.txt'
                 httpc get -v 'http://localhost'
                 httpc get -v 'http://localhost/inputBody.txt'
