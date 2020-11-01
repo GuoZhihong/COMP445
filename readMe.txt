@@ -22,3 +22,5 @@ Client side :A1:httpc get -v 'http://localhost/get?course=networking&assignment=
                 httpc get -v 'http://localhost'
                 httpc get -v 'http://localhost/inputBody.txt'
                 httpc get -v 'http://localhost/input.txt'
+               
+ UDP part refers to https://github.com/GuoZhihong/UDP-Server-Client-Application   
