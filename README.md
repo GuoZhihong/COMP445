@@ -4,12 +4,13 @@ Notice : for post with inline data example:
                                            
                                            
     I used CURL is httpc post -h Content-Type:application/json --d '{"Assignment": 1}' 'http://httpbin.org/post' 
-    instead of httpc post -h Content-Type:application/json --d '{"Assignment": 1}' http://httpbin.org/post to select right URL,so without '' in URL ,
-    all of command line will not work properly.
+    instead of httpc post -h Content-Type:application/json --d '{"Assignment": 1}' http://httpbin.org/post to select right URL,
+    so without '' in URL , all of command line will not work properly.
 
 
 
 # Assignment 2:
+
 Server Side:        
 
                     httpfs -d D:/onedrive/COMP/COMP445/lab/A1   
