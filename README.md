@@ -5,9 +5,9 @@ Notice : for post with inline data example:
 
 
 # Assignment 2:
-Server Side:        httpfs -d D:/onedrive/COMP/COMP445/lab/A1
-                    httpfs -v -d D:/onedrive/COMP/COMP445/lab/A1
-                    httpfs -v -p 8080 -d D:/onedrive/COMP/COMP445/lab/A1
+Server Side:        httpfs -d D:/onedrive/COMP/COMP445/lab/A1   
+                    httpfs -v -d D:/onedrive/COMP/COMP445/lab/A1    
+                    httpfs -v -p 8080 -d D:/onedrive/COMP/COMP445/lab/A1    
 
 
 Client side :          
