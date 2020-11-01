@@ -14,7 +14,7 @@ Server Side:    httpfs -d D:/onedrive/COMP/COMP445/lab/A1
 
 
 Client side :   
-                A1:httpc get -v 'http://localhost/get?course=networking&assignment=1'
+                    A1:httpc get -v 'http://localhost/get?course=networking&assignment=1'
                 httpc post -h Content-Type:application/json --d '{"Assignment": 1}' 'http://localhost/post'
 
 
