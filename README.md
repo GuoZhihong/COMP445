@@ -31,4 +31,4 @@ Client side :
                 httpc get -v 'http://localhost/inputBody.txt'
                 httpc get -v 'http://localhost/input.txt'
                
-# UDP part refers to https://github.com/GuoZhihong/UDP-Server-Client-Application   
+# UDP part refers to https://github.com/GuoZhihong/UDP-Console-Server
